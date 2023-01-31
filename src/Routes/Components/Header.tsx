@@ -125,11 +125,11 @@ function Header() {
     const toggleSearch = () => {
         if(searchOpen){
             inputAnimation.start({
-                scaleX: 0,
+                scaleX: 1,
             })
         }else {
             inputAnimation.start({
-                scaleX:1,
+                scaleX:0,
             })
         }
 
@@ -171,6 +171,7 @@ function Header() {
           <motion.svg
             transition={{type: "linear"}}
             onClick={toggleSearch}
+            
             animate={{x: searchOpen ? -180 : 0}}
             fill="currentColor"
             viewBox="0 0 20 20"
