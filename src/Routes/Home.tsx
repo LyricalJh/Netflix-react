@@ -1,13 +1,14 @@
-import { motion ,AnimatePresence, useScroll} from "framer-motion";
+import { motion ,AnimatePresence, useScroll, filterProps} from "framer-motion";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import {getMovies,IGetMoviesResult} from '../api';
+import {getMovies,IGetMoviesResult,IGetMoviesDetail} from '../api';
 import { makeImagePath } from "../utils";
 import {useEffect, useState} from 'react'
-import { useNavigate,useMatch} from "react-router-dom";
+import { useNavigate,useMatch, useParams} from "react-router-dom";
+import Detail from "./Components/Detail";
+
 const Wrapper = styled.div`
     background-color: black;
-
 `;
 
 const Loader = styled.div`
@@ -30,18 +31,23 @@ const Banner = styled.div<{bgPhoto:string}>`
 
 const Title = styled.h2`
     font-size: 58px;
-    margin-bottom: 90px;
+    font-weight: bold;
+    margin-bottom: 300px; 
+    
+
 `;
 
-const Overview = styled.p`
-    font-size: 36px;
-    width: 50%;
-    margin-bottom: 200px;
+const SliderTitle = styled.div`
+    font-size: 48px;
+    font-weight: bold;
+    padding: 25px;
+    top: -200px;
+    position: relative;
 `;
 
 const Slider =styled.div`
     position: relative;
-    top: -100px;
+    top: -200px;
 `;
  
 const Row = styled(motion.div)`
@@ -71,18 +77,9 @@ const Box = styled(motion.div)<{bgPhoto:string}>`
 
 `;
 
-const Info = styled(motion.div)`
-    padding: 10px;
-    background-color: ${(props) => props.theme.black.lighter};
-    opacity: 0;
-    position: absolute;
-    width: 100%;
-    bottom: 0px;
-    h4 {
-        text-align: center;
-        font-size: 18px;
-    }
-`;
+
+
+
 
 const Overlay = styled(motion.div)`
     position: fixed;
@@ -96,7 +93,7 @@ const Overlay = styled(motion.div)`
 
 const BigMovie = styled(motion.div)`
     position: absolute;
-    width: 40vw;
+    width: 80vw;
     height: 80vh;
     right: 0;
     left: 0;
@@ -110,7 +107,6 @@ const BigCover = styled.div`
     width: 100%;
     background-size: cover;
     background-position: center center;
-    
     height: 400px;
     
 `;
@@ -126,6 +122,10 @@ const BigTitle = styled.h3`
 const BigOverview = styled.p`
     padding: 20px;
     color: ${(props) => props.theme.white.lighter};
+`;
+
+const BigGenre = styled.div`
+    font-size: 40px;
 `;
 
 const rowBariants = {
@@ -156,69 +156,64 @@ const BoxVarinant = {
     }
 }
 
-const infoVariants = {
-    hover: {
-        opacity:1,
-        transition: {
-            delay:0.5,
-            duration: 0.3,
-            type:"tween",
-        }
-    }
-}
 
 
 
 const offset = 6;
 
- 
+
 function Home(){
     const navigate = useNavigate();
+    const pam = useParams();
+    const wow =Number(pam.movieId);
     const bigMovieMatch = useMatch("/movies/:movieId");
     const {scrollY} = useScroll();
-    const {data, isLoading} = useQuery<IGetMoviesResult>(["movies", "nowPlaying"], getMovies);
+    const {data : moiveData, isLoading: movieLoading} = useQuery<IGetMoviesResult>(["movies", "nowPlaying"], getMovies);
+    console.log(moiveData);
+    // const {data,isLoading} = useQuery<IGetMoviesDetail>(["moivesDetail"], ()=> {
+    //   return getMoviesDetail(wow)  
+    // });
     const [index, setIndex] = useState(0);
     const increaseIndex = () => {
-        if(data){
+        if(moiveData){
             if(leaving) return;
             toggleLeaving();
-            const totalMovies = data.results.length;
+            const totalMovies = moiveData.results.length;
             const maxIndex = Math.floor(totalMovies / offset) -1;
             setIndex((prev) => prev === maxIndex ? 0 : prev+1);
         }
     }
     const [random, setRandom] = useState(0);
     useEffect(()=> {
-        if(data){
-            const randomNumber = Math.floor(Math.random() * data.results.length);
+        if(moiveData){
+            const randomNumber = Math.floor(Math.random() * moiveData.results.length);
             setRandom(randomNumber)
         }
-    },[data,random])
+    },[moiveData,random])
     const [leaving, setLeaving] = useState(false);
     const toggleLeaving = () => {
         setLeaving((prev) => !prev);
     }
     const onBoxClicked = (movieId:number) => {
-        navigate(`movies/${movieId}`)
+         navigate(`movies/${movieId}`);
+         
     }
-
     const onOverlayClick = () => {
         navigate("/");
     }
 
-   const clickedMovie = bigMovieMatch?.params.movieId && data?.results.find(movie => movie.id + ""=== bigMovieMatch.params.movieId)
-   console.log(clickedMovie);
-
+    const clickedMovie = bigMovieMatch?.params.movieId && moiveData?.results.find(movie => movie.id === Number(bigMovieMatch.params.movieId))
+    console.log(clickedMovie);
     return (
         <Wrapper 
         style={{backgroundColor: "black", height: "200vh"}}>
-            {isLoading ?
+            {movieLoading ?
              <Loader>...Loading</Loader> 
              : 
-             <><Banner onClick={increaseIndex} bgPhoto={makeImagePath(data?.results[random].backdrop_path || "")}>
-                <Title>{data?.results[random].title}</Title>
-                <Overview>{data?.results[random].overview}</Overview>
+             <><Banner onClick={increaseIndex} bgPhoto={makeImagePath(moiveData?.results[random].backdrop_path || "")}>
+                <Title>{moiveData?.results[random].title}</Title>
             </Banner></>}
+            <SliderTitle>Now Playing</SliderTitle>
             <Slider>
                 <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
               <Row 
@@ -227,7 +222,7 @@ function Home(){
               animate="visible" exit="exit" 
               transition={{type:"tween", duration:1}}
               key={index}>
-               {data?.results.slice(1).slice(offset*index, offset*index+offset).map((movie) =>
+               {moiveData?.results.slice(1).slice(offset*index, offset*index+offset).map((movie) =>
                 <Box
                 layoutId={movie.id+""}
                 onClick={()=> onBoxClicked(movie.id)}
@@ -237,10 +232,7 @@ function Home(){
                 transition={{type:"tween"}}
                 key={movie.id}
                 bgPhoto={makeImagePath(movie.backdrop_path, "w500")}>
-                     <Info
-                     variants={infoVariants}
-                     ><h4>{movie.title}</h4></Info>
-                     
+                <Detail id={movie.id}/>         
                      </Box>)}
               </Row>
               </AnimatePresence>
@@ -253,9 +245,10 @@ function Home(){
                 layoutId={bigMovieMatch.params.movieId}
                  style={{top: scrollY.get() + 100}}>
                     {clickedMovie && <>
-                        <BigCover style={{backgroundImage: `url(${makeImagePath(clickedMovie.backdrop_path, "w500")})`}} />
+                        <BigCover style={{backgroundImage: `url(${makeImagePath(clickedMovie.backdrop_path, "w1280")})`}} />
                         <BigTitle>{clickedMovie.title}</BigTitle>
                         <BigOverview>{clickedMovie.overview}</BigOverview>
+                        {/* <BigGenre>{data?.genres.map((item) => <span key={item.id}>{item.name}</span>)}</BigGenre> */}
                     </>}
                     </BigMovie></>
                      ): null}

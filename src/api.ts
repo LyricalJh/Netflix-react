@@ -9,6 +9,11 @@ interface IMovie {
     overview:string;
 }
 
+export interface IGenre {
+    id:number;
+    name:string
+}
+
 
 export interface IGetMoviesResult {
     dates: {
@@ -21,6 +26,20 @@ export interface IGetMoviesResult {
     total_results: number;
 }
 
+export interface IGetMoviesDetail {
+    genres: IGenre[],
+    release_date: string;
+    vote_average:number;
+    runtime:number;
+}
+
 export function getMovies() {
     return fetch(`${BASE_PATH}/movie/now_playing?api_key=${API_KEY}`).then((response)=> response.json());
 }
+
+export function getMoviesDetail(movieId:number){
+    return fetch(`${BASE_PATH}/movie/${movieId}?api_key=${API_KEY}&language=en-US`).then((response)=> response.json());
+}
+
+
+//`${BASE_PATH}/movie/${movieId}?api_key=${API_KEY}&language=en-US`
