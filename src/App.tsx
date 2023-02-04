@@ -11,9 +11,7 @@ function App(){
       <Header />
       <Routes>
         <Route path="/" element={<Home />}>
-        <Route path="movies/:movieId" element={<Home />}/>
         </Route>
-          
         <Route path="/tv" element={<Tv />}>
         </Route>
         <Route path="/serarch" element={<Search />}>
