@@ -13,7 +13,7 @@ function Home(){
         <Banner bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}>
             <Title>{data?.results[0].title}</Title>
         </Banner>
-       <Slider data={data}/>
+       <Slider data={data!}/>
         </>}
         </Wrapper>
     )
