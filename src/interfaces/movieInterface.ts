@@ -44,5 +44,16 @@ export interface IMovieProps {
     }
 }
 
+export interface IDetail {
+    genres:IGenres[];
+    id:number;
+    release_date:string;
+    runtime:number;
+    title:string;
+    vote_average:number;
+    vote_count:number;
+    backdrop_path:string;
+}
+
 
 

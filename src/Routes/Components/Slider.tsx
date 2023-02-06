@@ -1,12 +1,11 @@
-import {Wrapper,Row,GetPre,GetNext,rowVariants,Box,MovieType,BoxVariants,Info,infoVariants,NextBtnVariants,Genre} from '../../style/SliderStyle';
+import {Wrapper,Row,GetPre,GetNext,rowVariants,Box,MovieType,BoxVariants,Info,infoVariants,NextBtnVariants,Genre,Modal, ModalCover, ModalTitle} from '../../style/SliderStyle';
 import {AnimatePresence} from 'framer-motion';
-import { useState } from 'react';
-import {IMovieProps,IMovieGenres} from '../../interfaces/movieInterface'
+import { useEffect, useState } from 'react';
+import {IMovieProps,IMovieGenres,IDetail} from '../../interfaces/movieInterface'
 import { makeImagePath } from '../../utils';
 import { useNavigate ,useMatch} from 'react-router-dom';
 import { useQuery } from 'react-query';
-import {getMovieGenres} from '../../api';
-
+import {getMovieGenres,API_KEY,BASE_URL} from '../../api';
 
 
 const offset = 6;
@@ -14,9 +13,16 @@ const offset = 6;
 function Slider({data}:IMovieProps){
     const navigate = useNavigate();
     const clickedMacth = useMatch(`movie/:movieId`);
-    const clickNumber = Number(clickedMacth?.params.movieId);
+    const clickedMovieId = Number(clickedMacth?.params.movieId);
     const {data:movieGenres, isLoading} = useQuery<IMovieGenres>(['movieDetail'],getMovieGenres)
-    
+    const [detail,setDetail] = useState<IDetail>();
+    useEffect(()=> {
+        if(clickedMovieId){
+          fetch(`${BASE_URL}/movie/${clickedMovieId}?api_key=${API_KEY}`)
+          .then((response)=>response.json())
+          .then((json)=>setDetail(json));
+        }
+    },[clickedMovieId]);
     const [index,setIndex] = useState(0);
     const [leaving, setLeaving] = useState(false);
     const increaseIndex =() => {
@@ -51,6 +57,7 @@ function Slider({data}:IMovieProps){
                 onClick={increaseIndex}>click</GetPre>
                 {data?.results.slice(1).slice(offset* index, offset * index + offset).map((movie) => 
                 <Box 
+                layoutId={movie.id+""}
                 onClick={()=>onBoxClicked(movie.id)}
                 variants={BoxVariants}
                 whileHover="hover"
@@ -63,11 +70,10 @@ function Slider({data}:IMovieProps){
                     variants={infoVariants}
                     >
                     <>
-                      
                       <h4>{movie?.title}</h4>
                       {movieGenres?.genres.map((genre) => String(genre.id) === String(movie.genre_ids[0]) ?  <Genre key={genre.id}>Genre:{genre.name}</Genre> : null)}
+                      <span>{detail?.runtime}</span>
                     </>
-                      
                     </Info>
                   </Box>)}
                 <GetNext 
@@ -77,6 +83,22 @@ function Slider({data}:IMovieProps){
                 
             </Row>
             </AnimatePresence>
+
+            <AnimatePresence>
+
+            {clickedMovieId ? (<> 
+                <Modal
+                  style={{borderRadius: "15px"}}              
+                  layoutId={clickedMovieId+""}
+                  >
+                    {detail && <>
+                      <ModalCover
+                      style={{backgroundImage: `linear-gradient(to top,black, transparent), url(${makeImagePath(detail.backdrop_path, "w1280")})`}}
+                      />
+                      <ModalTitle>{detail.title}</ModalTitle>
+                    </>}
+              </Modal></> ): null}
+        </AnimatePresence>
         </Wrapper>
     )
 }

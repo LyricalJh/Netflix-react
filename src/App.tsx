@@ -4,7 +4,6 @@ import Tv from './Routes/Tv';
 import Search from './Routes/Search';
 import Header from './Routes/Components/Header';
 
-
 function App(){
   return (
     <Router>

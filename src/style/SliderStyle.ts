@@ -16,22 +16,22 @@ export const Row = styled(motion.div)`
 `;
 
 export const Box = styled(motion.div)<{bgphoto:string}>`
-background-image: url(${(props) => props.bgphoto });
-background-size: cover;
-background-position: center center;
-color: red;
-font-size: 65px;
-background-color: white;
-height: 200px;
-position: relative;
-cursor: pointer;
-&:nth-child(2) {
-    transform-origin:center left ;
-}
-&:nth-child(7){
-    transform-origin:center right ;
-}
-`;
+    background-image: url(${(props) => props.bgphoto });
+    background-size: cover;
+    background-position: center center;
+    color: red;
+    font-size: 65px;
+    background-color: white;
+    height: 200px;
+    /* position: relative ; */
+    cursor: pointer;
+    &:nth-child(2) {
+        transform-origin:center left ;
+    }
+    &:nth-child(7){
+        transform-origin:center right ;
+    }
+    `;
 
 
 export const GetPre = styled(motion.div)`
@@ -89,9 +89,9 @@ export const BoxVariants = {
         scale:1
     },
     hover:{
+        zIndex: 99,
         borderRadius: "5px",
-        zIndex:1,
-        y:-50,
+        y:-80,
         scale:1.3,
         transition:{
             delay:0.5,
@@ -105,9 +105,10 @@ export const Info = styled(motion.div)`
     padding: 20px;
     background-color: ${(props) => props.theme.black.lighter};
     opacity: 0;
-    position: absolute;
-    bottom: 0px;
+    position: relative;
     width: 100%;
+    bottom: -180px;
+    height: 20px;
     h4 {
         text-align: center;
         font-size: 18px;
@@ -130,6 +131,43 @@ export const infoVariants = {
 
 export const Genre = styled.span`
     color: ${(props) => props.theme.white.lighter};
-    
     font-size: 10px;
+`;
+
+export const Image = styled.div<{bgphoto:string}>`
+`;
+
+export const Modal = styled(motion.div)`
+    z-index: 2;
+    background-color: ${(props)=> props.theme.black.lighter};
+    position: fixed;
+    bottom: 50px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 40vw;
+    height: 80vh;
+    border-radius: 15px;
+    overflow: hidden;
+    
+`;
+
+
+export const ModalCover = styled.div`
+    width: 100%;
+    height: 400px;
+    background-size: cover;
+    background-position: center center;
+`;
+
+export const ModalTitle = styled.h3`
+    color: ${(props)=> props.theme.white.lighter};
+`;
+export const Overlay = styled(motion.div)`
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    opacity: 0;
 `;
