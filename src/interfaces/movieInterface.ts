@@ -53,6 +53,8 @@ export interface IDetail {
     vote_average:number;
     vote_count:number;
     backdrop_path:string;
+    overview:string;
+    
 }
 
 
