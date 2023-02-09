@@ -3,6 +3,8 @@ import {motion} from 'framer-motion';
 
 export const Wrapper = styled.div`
     background-color: black;
+    display: flex;
+    flex-direction: column;
 `;
 
 export const Loader = styled.div`

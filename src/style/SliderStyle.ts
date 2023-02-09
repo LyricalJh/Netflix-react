@@ -3,7 +3,8 @@ import {motion} from 'framer-motion';
 
 export const Wrapper = styled.div`
     position: relative;
-    top: -100px;
+    top: -550px;
+    margin-top: 330px;
 `;
 
 export const Row = styled(motion.div)`

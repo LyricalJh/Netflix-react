@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import {getMovie} from '../api';
+import {getMovie,getTopRatedMovies,getUpComingSoon,getPopularMovie} from '../api';
 import {IGetMoviesResult} from '../interfaces/movieInterface';
 import {Wrapper,Loader, Banner, Title} from '../style/HomeStyle';
 import Slider from './Components/Slider';
@@ -11,7 +11,11 @@ import { Overlay } from "../style/SliderStyle";
 
 function Home(){
     const navigate = useNavigate();
-    const {data,isLoading} = useQuery<IGetMoviesResult>(["movies", "now playing"],getMovie);
+    const {data: nowMovie,isLoading} = useQuery<IGetMoviesResult>(["movies", "now playing"],getMovie);
+    const {data: TopMovie,isLoading: TopLoading} = useQuery<IGetMoviesResult>(["movies", "Top Rated"], getTopRatedMovies);
+    const {data: UpComingMoive,isLoading: UpComingMoiveLoading} = useQuery<IGetMoviesResult>(["movies", "Top Rated"], getUpComingSoon);
+    const {data: PopularMovie,isLoading: PopularMovieLoading} = useQuery<IGetMoviesResult>(["movies", "Top Rated"], getPopularMovie);
+    
     const  clickedMovie = useMatch('movie/:movieId');
     const clickedMovieId = Number(clickedMovie?.params.movieId);
     const onOverlayClick = () => {
@@ -19,10 +23,14 @@ function Home(){
     }
     return (
         <Wrapper>{isLoading ? <Loader>..Loading</Loader> : <>
-        <Banner bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}>
-            <Title>{data?.results[0].title}</Title>
+        <Banner bgPhoto={makeImagePath(nowMovie?.results[0].backdrop_path || "")}>
+            <Title>{nowMovie?.results[0].title}</Title>
         </Banner>
-       <Slider data={data!}/>
+       <Slider  title="Now Playing" data={nowMovie!}/>
+       <Slider  title="Top Rating" data={TopMovie!}/>
+       <Slider  title="Popular Moive" data={PopularMovie!}/>
+       <Slider  title="Coming Soon" data={UpComingMoive!}/>
+
         </>}
         <AnimatePresence>
             {clickedMovieId &&

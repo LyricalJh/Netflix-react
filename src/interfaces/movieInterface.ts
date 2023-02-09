@@ -32,6 +32,7 @@ export interface IGetMoviesResult {
 }
 
 export interface IMovieProps {
+    title:string;
     data: {
         dates: {
             maximum:string;

@@ -12,15 +12,14 @@ import {faPlay, faPlus, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 
 const offset = 6;
 
-function Slider({data}:IMovieProps){
+function Slider({data, title}:IMovieProps){
     const navigate = useNavigate();
     const clickedMacth = useMatch(`movie/:movieId`);
     const clickedMovieId = Number(clickedMacth?.params.movieId);
     const {data:movieGenres, isLoading} = useQuery<IMovieGenres>(['movieDetail'],getMovieGenres)
     const [detail,setDetail] = useState<IDetail>();
     const [like,setLike] = useState(0)
-    console.log(movieGenres?.genres);
-    console.log(data.results);
+    
     useEffect(()=> {
         if(clickedMovieId){
           fetch(`${BASE_URL}/movie/${clickedMovieId}?api_key=${API_KEY}`)
@@ -46,7 +45,7 @@ function Slider({data}:IMovieProps){
     }
     return(
         <Wrapper>
-            <MovieType>Now Playing</MovieType>
+            <MovieType>{title}</MovieType>
             <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
             
             <Row 
